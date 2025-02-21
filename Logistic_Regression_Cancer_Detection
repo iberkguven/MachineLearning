@@ -1,0 +1,222 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/iberkguven/MachineLearning/blob/main/Logistic_Regression_Cancer_Detection\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "Q8X8xDwS6vgS"
+      },
+      "source": [
+        "# Logistic Regression"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "PEGG4I6n60cM"
+      },
+      "source": [
+        "## Importing the libraries"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "import numpy as np"
+      ],
+      "metadata": {
+        "id": "6awoqm0wuppx"
+      },
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "Aa536pRY7Eq5"
+      },
+      "source": [
+        "## Importing the dataset"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "dataset = pd.read_csv('breast_cancer.csv')\n",
+        "X = dataset.iloc[ :,1:-1].values\n",
+        "y = dataset.iloc[:,-1].values"
+      ],
+      "metadata": {
+        "id": "lXGuFQLwutm4"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "0AnzJQCj7TLO"
+      },
+      "source": [
+        "## Splitting the dataset into the Training set and Test set"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.model_selection import train_test_split\n",
+        "X_train,X_test,y_train,y_test = train_test_split (X,y,test_size = 0.2, random_state = 0)"
+      ],
+      "metadata": {
+        "id": "U2ha_Gmyv0Hv"
+      },
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "pS1Q-n_A7iZ_"
+      },
+      "source": [
+        "## Training the Logistic Regression model on the Training set"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.linear_model import LogisticRegression\n",
+        "clf = LogisticRegression (random_state = 0).fit(X_train,y_train)"
+      ],
+      "metadata": {
+        "id": "Qs2c93gNyQUG"
+      },
+      "execution_count": 8,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "4cgD7EnB8Dnd"
+      },
+      "source": [
+        "## Predicting the Test set results"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "y_pred = clf.predict(X_test)"
+      ],
+      "metadata": {
+        "id": "HUGbXQOJyvfL"
+      },
+      "execution_count": 9,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "26CHkZbs8Tu5"
+      },
+      "source": [
+        "## Making the Confusion Matrix"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.metrics import confusion_matrix,accuracy_score\n",
+        "cm = confusion_matrix(y_test,y_pred)\n",
+        "print(cm)\n",
+        "accuracy_score(y_test,y_pred)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "2PgoTCl2y1PJ",
+        "outputId": "d2423c30-f0d7-4fc4-de25-7759c85ae311"
+      },
+      "execution_count": 16,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "[[84  3]\n",
+            " [ 3 47]]\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "0.9562043795620438"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 16
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "kMErnLnu8hmb"
+      },
+      "source": [
+        "## Computing the accuracy with k-Fold Cross Validation"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.model_selection import cross_val_score\n",
+        "accuracies = cross_val_score(estimator = clf, X = X_train, y = y_train, cv = 10)\n",
+        "print(\"Accuracy: {:.2f} %\".format(accuracies.mean()*100))\n",
+        "print(\"Standard Deviation: {:.2f} %\".format(accuracies.std()*100))"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "yfmpWiHj7XYJ",
+        "outputId": "8a804f58-f42a-4b89-b370-7b7e4accd68f"
+      },
+      "execution_count": 23,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Accuracy: 96.70 %\n",
+            "Standard Deviation: 1.97 %\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
